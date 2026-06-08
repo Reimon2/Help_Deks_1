@@ -81,5 +81,10 @@ Route::get('/tickets', [App\Http\Controllers\TicketController::class, 'index'])-
 Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
 Route::patch('/tickets/{ticket}/status', [TicketController::class, 'updateStatus'])->name('tickets.updateStatus');
 Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+// Ruta para que el técnico envíe el ticket a escalado
+Route::post('/tickets/{ticket}/escalar', [TicketController::class, 'escalar'])->name('tickets.escalar');
+
+// Ruta para que el admin/analista procese el cambio de dificultad y reasigne
+Route::post('/tickets/{ticket}/resolver-escalado', [TicketController::class, 'resolverEscalado'])->name('tickets.resolver.escalado');
 
 require __DIR__.'/auth.php';

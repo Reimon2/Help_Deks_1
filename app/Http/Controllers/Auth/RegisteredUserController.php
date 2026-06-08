@@ -31,21 +31,22 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        'name' => ['required', 'string', 'max::255'],
+        'email' => ['required', 'string', 'email', 'max::255', 'unique:users'],
+        'password' => ['required', 'string', 'min:8', 'confirmed'],
+        'role' => ['required', 'string', 'in:admin,analista,tecnico'], // Validamos los nuevos roles
+    ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => $request->role, // Guardamos el rol elegido
+    ]);
 
-        event(new Registered($user));
+    // OJO: Si antes tenías una línea que decía Auth::login($user); ¡BÓRRALA! 
+    // Como ahora el admin es el que crea los usuarios, no queremos que se cierre su sesión.
 
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->back()->with('success', 'Usuario creado con éxito.');
     }
 }

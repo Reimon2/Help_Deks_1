@@ -206,7 +206,47 @@
                             </span>
                         </td>
                         <td class="py-4 text-right">
-                            <span class="text-indigo-600 font-bold">Abierto</span>
+                            @if($ticket->status === 'escalado')
+                                <span class="text-red-600 font-bold uppercase text-xs bg-red-100 px-2 py-1 rounded">🚨 Escalado</span>
+                            @elseif($ticket->status === 'en_progreso')
+                                <span class="text-blue-650 font-bold uppercase text-xs bg-blue-100 px-2 py-1 rounded">⏳ En Progreso</span>
+                            @else
+                                <span class="text-indigo-650 font-bold uppercase text-xs bg-indigo-100 px-2 py-1 rounded">✅ {{ ucfirst($ticket->status) }}</span>
+                            @endif
+
+                            @if(auth()->user()->role === 'tecnico' && ($ticket->status === 'abierto' || $ticket->status === 'en_progreso'))
+                                <form action="{{ route('tickets.escalar', $ticket->id) }}" method="POST" class="mt-2 block">
+                                    @csrf
+                                    <input type="text" name="comentario_escalado" placeholder="¿Por qué se escala?" class="text-xs p-1 border border-gray-350 rounded w-full max-w-xs mb-1" required>
+                                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1 px-2 rounded block ml-auto">
+                                        Escalar caso
+                                    </button>
+                                </form>
+                            @endif
+
+                            @if((auth()->user()->role === 'admin' || auth()->user()->role === 'analista') && $ticket->status === 'escalado')
+                                <div class="bg-yellow-50 p-2 rounded border border-yellow-300 text-xs mt-2 text-left max-w-xs inline-block">
+                                    <p class="text-gray-700 mb-2"><strong>Motivo Técnico:</strong> "{{ $ticket->comentario_escalado }}"</p>
+                                    
+                                    <form action="{{ route('tickets.resolver.escalado', $ticket->id) }}" method="POST">
+                                        @csrf
+                                        <div class="mb-1">
+                                            <label class="block text-[10px] font-bold text-gray-600">Dificultad:</label>
+                                            <select name="dificultad" class="text-xs p-1 border rounded bg-white w-full">
+                                                <option value="baja">Baja</option>
+                                                <option value="media">Media</option>
+                                                <option value="alta" selected>Alta (Falta Infraestructura)</option>
+                                            </select>
+                                        </div>
+
+                                        <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+
+                                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded w-full mt-1">
+                                            Resolver e Ir
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                 @empty

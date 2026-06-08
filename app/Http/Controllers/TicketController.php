@@ -59,5 +59,30 @@ class TicketController extends Controller
         $ticket->delete();
         return back()->with('status', 'Ticket eliminado');
     }
+
+    // Función para el Técnico
+    public function escalar(Request $request, Ticket $ticket)
+    {
+        // Cambiamos el estado a escalado y guardamos la razón del problema
+        $ticket->update([
+            'status' => 'escalado',
+            'comentario_escalado' => $request->comentario_escalado
+        ]);
+
+        return redirect()->back()->with('success', 'El ticket ha sido escalado al Administrador.');
+    }
+
+    // Función para el Admin y Analista
+    public function resolverEscalado(Request $request, Ticket $ticket)
+    {
+        // El admin cambia la dificultad y reasigna el ticket a otro técnico (user_id)
+        $ticket->update([
+            'status' => 'en_progreso', // Vuelve a estar activo
+            'dificultad' => $request->dificultad,
+            'user_id' => $request->user_id, // Nuevo técnico asignado
+        ]);
+
+        return redirect()->back()->with('success', 'Ticket actualizado y reasignado con éxito.');
+    }
     
 }

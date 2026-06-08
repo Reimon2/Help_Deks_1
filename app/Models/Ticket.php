@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ticket extends Model
 {
-    protected $fillable = ['user_id', 'name', 'last_name', 'subject', 'priority', 'department', 'description'];
+    protected $fillable = [
+    'title',
+    'description',
+    'status',              // Asegúrate de que esté aquí
+    'dificultad',          // Agregado para el Admin/Analista
+    'comentario_escalado', // Agregado para el Técnico
+    'user_id'
+    ];
 
     // LA FUNCIÓN DEBE IR AQUÍ ADENTRO
     public function user()
