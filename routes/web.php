@@ -4,6 +4,16 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Ticket;
 use App\Http\Controllers\TicketController;
+use Illuminate\Support\Facades\Artisan;
+
+// TRUCO TEMPORAL PARA RECONSTRUIR LA BASE DE DATOS EN LA NUBE
+try {
+    Artisan::call('migrate:fresh', ['--force' => true]);
+    echo "¡Base de datos reconstruida con éxito!";
+} catch (\Exception $e) {
+    // Si da un error, que lo pinte en la pantalla para saber qué pasa
+    echo "Error en la migración: " . $e->getMessage();
+}
 
 Route::get('/', function () {
     return redirect('/login');
