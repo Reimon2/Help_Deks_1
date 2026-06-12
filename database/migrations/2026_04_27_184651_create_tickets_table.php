@@ -12,17 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tickets', function (Blueprint $table) {
-            $table->id();
-            // Añade estas líneas aquí:
-            $table->string('name');
-            $table->string('last_name');
-            $table->string('subject');
-            $table->string('priority');
-            $table->string('department');
-            $table->text('description');
-            
-            $table->timestamps();
-        });
+        $table->id();
+        
+        // 1. Relación con la tabla usuarios (¡Muy importante para tus 3 roles!)
+        $table->foreignId('user_id')->constrained('usuarios')->onDelete('cascade');
+        
+        $table->string('name');
+        $table->string('last_name');
+        $table->string('subject');
+        $table->string('priority');
+        $table->string('department');
+        $table->text('description');
+        
+        // 2. Estado del ticket (lo que venía del archivo add_status)
+        $table->string('status')->default('open'); 
+
+        $table->timestamps();
+    });
     }
 
     /**
